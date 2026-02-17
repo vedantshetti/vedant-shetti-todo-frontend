@@ -1,14 +1,14 @@
 import { useState } from "react";
 import { TodoService } from "../services/todoService";
 
-function TodoItem({todo,loadTodos,setDeleteTodo}){
-    const[editing,setEditing] = useState(false);
-    const[title,setTitle]=useState(todo.title);
-    const[description,setDescription]=useState(todo.description);
+function TodoItem({ todo, loadTodos, setDeleteTodo, selectedTodos, handleSelectTodo }) {
+    const [editing, setEditing] = useState(false);
+    const [title, setTitle] = useState(todo.title);
+    const [description, setDescription] = useState(todo.description);
 
-    const handleUpdate= async()=>{
-        await TodoService.updateTodo(todo.id,{
-            title,description
+    const handleUpdate = async () => {
+        await TodoService.updateTodo(todo.id, {
+            title, description
         })
 
         setEditing(false);
@@ -16,68 +16,107 @@ function TodoItem({todo,loadTodos,setDeleteTodo}){
 
     };
 
-    const handleStatusChange=async(e)=>{
+    const handleStatusChange = async (e) => {
 
-        await TodoService.updateTodo(todo.id,{status:e.target.value});
+        await TodoService.updateTodo(todo.id, { status: e.target.value });
         loadTodos();
 
     };
 
-    const handleDelete=async()=>{
+    const handleDelete = async () => {
 
         await TodoService.deleteTodo(todo.id);
         loadTodos();
 
     };
 
-    return(
+    const getStatusBadgeClass = (status) => {
+        const baseClass = "status-badge";
+        switch (status) {
+            case 'completed': return `${baseClass} status-completed`;
+            case 'in-progress': return `${baseClass} status-in-progress`;
+            case 'on-hold': return `${baseClass} status-on-hold`;
+            default: return baseClass;
+        }
+    };
+
+    const getStatusLabel = (status) => {
+        switch (status) {
+            case 'completed': return 'completed';
+            case 'in-progress': return 'in-progress';
+            case 'on-hold': return 'on-hold';
+            default: return status;
+        }
+    };
+
+    return (
         <div className="todo-item" data-status={todo.status}>
 
 
             <div className="todo-left">
-                <input type="checkbox"/>
-            
-            {editing ? (
-                <div style={{width:"100%"}}>
-                    <input value={title} onChange={(e)=>setTitle(e.target.value)}/>
-                    <input value={description} onChange={(e)=>setDescription(e.target.value)}/>
-                    <button onClick={handleUpdate}>Save</button>
-                </div>
-            ):(
-             
-            <div>
-                <div className="todo-title">{todo.title}</div>
-                <small style={{color:"#64748b"}}>{todo.description}</small>
-                
+                <input
+                    type="checkbox"
+                    checked={selectedTodos.includes(todo.id)}
+                    onChange={(e) => handleSelectTodo(todo.id)}
+                />
 
-             </div>   
-        
+                {editing ? (
+                    <div className="edit-form">
+                        <input
+                            value={title}
+                            onChange={(e) => setTitle(e.target.value)}
+                            placeholder="Title"
+                        />
+                        <input
+                            value={description}
+                            onChange={(e) => setDescription(e.target.value)}
+                            placeholder="Description"
+                        />
+                        <button onClick={handleUpdate} className="save-btn">Save</button>
+                        <button onClick={() => setEditing(false)} className="cancel-edit-btn">Cancel</button>
+                    </div>
+                ) : (
 
-            )}
+                    <div className="todo-content">
+                        <div className="todo-title">{todo.title}</div>
+                        {todo.description && (
+                            <div className="todo-desc">{todo.description}</div>
+                        )}
+                    </div>
+
+
+                )}
             </div>
 
 
 
 
+            <div className="todo-right">
+                <div className={getStatusBadgeClass(todo.status)}>
+                    {getStatusLabel(todo.status)}
+                    <select
+                        value={todo.status}
+                        onChange={handleStatusChange}
+                        className="status-dropdown"
+                    >
+                        <option value="completed">completed</option>
+                        <option value="on-hold">on-hold</option>
+                        <option value="in-progress">in-progress</option>
+                    </select>
+                </div>
+
+                <div className="todo-actions">
+                    <button className="icon-btn edit-btn" onClick={() => setEditing(true)}>
+                       edit
+                    </button>
+                    <button className="icon-btn delete-btn" onClick={() => { setDeleteTodo(todo) }}>
+                        delete
+                    </button>
+                </div>
 
 
 
-
-            <div style={{display:"flex",alignItems:"center",gap:"10px"}}>
-                <select>
-                    <option value="completed">completed</option>
-                    <option value="on-hold">on-hold</option>
-                    <option value="in-progress">in-progress</option>
-                </select>
-              
-              <div className="todo-actions">
-                <button className="icon-btn" onClick={()=>setEditing(true)}>Edit</button>
-                <button className="icon-btn delete-btn"  onClick={()=>{console.log(todo) ; setDeleteTodo(todo)  } }>Delete</button>
-              </div>
-            
-
-    
-        </div>    
+            </div>
         </div>
     );
 
