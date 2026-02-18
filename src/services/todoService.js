@@ -5,21 +5,18 @@ export const TodoService = {
         const response = await fetch(`${API_URL}/todos`);
         return response.json();
     },
-    addTodo: async (title,description) => {
-        const res = await fetch(`${API_URL}/todos`,{
-            method:"POST",
-            headers:{"Content-Type":"application/json"},
-            body:JSON.stringify({title,description})
-
+    addTodo: async (title, description) => {
+        const res = await fetch(`${API_URL}/todos`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ title, description })
         });
         return res.json();
     },
-    updateTodo: async (id,data) => {
+    updateTodo: async (id, data) => {
         const response = await fetch(`${API_URL}/todos/${id}`, {
             method: "PUT",
-            headers: {
-                "Content-Type": "application/json",
-            },
+            headers: { "Content-Type": "application/json" },
             body: JSON.stringify(data),
         });
         return response.json();
@@ -30,5 +27,20 @@ export const TodoService = {
         });
         return response.json();
     },
-
+    bulkDelete: async (ids) => {
+        const response = await fetch(`${API_URL}/todos/bulk`, {
+            method: "DELETE",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ ids }),
+        });
+        return response.json();
+    },
+    reorderTodos: async (orderedIds) => {
+        const response = await fetch(`${API_URL}/todos/reorder`, {
+            method: "PUT",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ orderedIds }),
+        });
+        return response.json();
+    },
 };

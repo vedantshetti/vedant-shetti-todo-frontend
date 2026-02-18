@@ -3,6 +3,7 @@ function ActionBar({
     selectedTodos = [],
     handleSelectAll,
     handleBulkStatusChange,
+    handleBulkDelete,
     filterStatus,
     setFilterStatus
 }) {
@@ -32,6 +33,14 @@ function ActionBar({
                     <option value="in-progress">Mark as In Progress</option>
                     <option value="on-hold">Mark as On Hold</option>
                 </select>
+
+                <button
+                    className="bulk-delete-btn"
+                    onClick={handleBulkDelete}
+                    disabled={selectedTodos.length === 0}
+                >
+                    Delete Selected {selectedTodos.length > 0 && `(${selectedTodos.length})`}
+                </button>
 
                 <div className="filters">
                     <label>
@@ -80,4 +89,3 @@ function ActionBar({
 }
 
 export default ActionBar
-

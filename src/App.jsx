@@ -51,9 +51,30 @@ function App() {
     await Promise.all(selectedTodos.map((id) => TodoService.updateTodo(id, { status })))
     setSelectedTodos([]);
     loadTodos();
-
-
   }
+
+  const handleBulkDelete = async () => {
+    if (!selectedTodos.length) return;
+    await TodoService.bulkDelete(selectedTodos);
+    setSelectedTodos([]);
+    setCurrentPage(1);
+    loadTodos();
+  };
+
+  const handleReorder = async (reorderedTodos) => {
+    // Optimistically update local state
+    const newTodos = [...todos];
+    // Replace the paginated slice with the reordered version
+    const startIndex = (currentPage - 1) * itemsPerPage;
+    reorderedTodos.forEach((todo, i) => {
+      const globalIdx = newTodos.findIndex(t => t.id === todo.id);
+      if (globalIdx !== -1) newTodos[globalIdx] = todo;
+    });
+    setTodos(newTodos);
+    // Persist the full order to backend using all todo IDs in current order
+    const orderedIds = newTodos.map(t => t.id);
+    await TodoService.reorderTodos(orderedIds);
+  };
 
   const filteredTodos = todos.filter((todo) => {
     if (filterStatus === 'all') return true;
@@ -92,6 +113,7 @@ function App() {
         selectedTodos={selectedTodos}
         handleSelectAll={handleSelectAll}
         handleBulkStatusChange={handleBulkStatusChange}
+        handleBulkDelete={handleBulkDelete}
         filterStatus={filterStatus}
         setFilterStatus={setFilterStatus}
       />
@@ -103,6 +125,7 @@ function App() {
         setDeleteTodo={setDeleteTodo}
         selectedTodos={selectedTodos}
         handlSelectTodo={handleSelectTodo}
+        onReorder={handleReorder}
       />
 
       <Pagination

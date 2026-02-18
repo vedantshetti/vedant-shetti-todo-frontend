@@ -472,3 +472,74 @@ h3 {
 .todo-item[data-status="in-progress"] .todo-title {
   color: #2563eb;
 }
+
+
+.drag-wrapper {
+  cursor: grab;
+  border-radius: 8px;
+  transition: opacity 0.15s, transform 0.15s;
+}
+
+.drag-wrapper:active {
+  cursor: grabbing;
+}
+
+.drag-wrapper.dragging {
+  opacity: 0.4;
+  transform: scale(0.98);
+}
+
+.drag-wrapper.drag-over {
+  border: 2px dashed #3b82f6;
+  border-radius: 8px;
+  background: #eff6ff;
+}
+
+.drag-wrapper.drag-over .todo-item {
+  border-color: transparent;
+}
+
+/* drag handle hint on hover */
+.drag-wrapper:not(.dragging) .todo-item::before {
+  content: "⠿";
+  position: absolute;
+  left: -18px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #cbd5e1;
+  font-size: 16px;
+  opacity: 0;
+  transition: opacity 0.15s;
+  pointer-events: none;
+}
+
+.drag-wrapper:hover .todo-item::before {
+  opacity: 1;
+}
+
+.todo-item {
+  position: relative;
+}
+
+.bulk-delete-btn {
+  padding: 8px 14px;
+  border-radius: 6px;
+  border: 1px solid #fca5a5;
+  background: #fff1f2;
+  color: #dc2626;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: 0.2s;
+  white-space: nowrap;
+}
+
+.bulk-delete-btn:hover:not(:disabled) {
+  background: #fee2e2;
+  border-color: #ef4444;
+}
+
+.bulk-delete-btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
